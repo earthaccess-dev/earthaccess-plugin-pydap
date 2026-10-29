@@ -154,7 +154,6 @@ class TestSupport:
         assert capabilities.ok is True
         assert capabilities.operations == {
             Capability.LAZY_READ,
-            Capability.SUBSET_DIMENSION,
             Capability.SUBSET_VARIABLE,
         }
 

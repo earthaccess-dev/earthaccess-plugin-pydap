@@ -26,7 +26,6 @@ __all__ = ["PyDAPPlugin"]
 _OPENDAP_OPERATIONS = frozenset(
     {
         Capability.LAZY_READ,
-        Capability.SUBSET_DIMENSION,
         Capability.SUBSET_VARIABLE,
     }
 )

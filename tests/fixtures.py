@@ -6,6 +6,7 @@ import contextlib
 from contextlib import AbstractContextManager
 from typing import Any
 
+from earthaccess_plugin_spec import Capability, Job
 from earthaccess_plugin_spec.results import GranuleResultSet
 from earthaccess_plugin_spec.testing import Fixtures
 
@@ -36,7 +37,20 @@ class PyDAPFixtures(Fixtures):
             "unsupported_result_set",
             GranuleResultSet([make_granule(collection_id="C-NO-OPENDAP", urls=[])]),
         )
+        kwargs.setdefault(
+            "capability_cases",
+            {Capability.SUBSET_VARIABLE: {"variables": ["sst"]}},
+        )
         super().__init__(**kwargs)
+        self.capability_assertions.setdefault(
+            Capability.SUBSET_VARIABLE, self._assert_variable_constraint
+        )
+
+    @staticmethod
+    def _assert_variable_constraint(job: Job) -> None:
+        hrefs = [asset.href for asset in job.results()]
+        assert hrefs, "the variable case produced no assets"
+        assert all("?dap4.ce=/sst" in href for href in hrefs), hrefs
 
     def backend(self) -> AbstractContextManager[Any]:
         # The xarray client only builds URLs; nothing to patch.
