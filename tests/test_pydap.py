@@ -124,6 +124,16 @@ class TestRequest:
         assert datasets[0]["url"] == "dap4://example.org/g1.dap?dap4.ce=/lat"
         assert datasets[0]["protocol"] == "dap4"
         assert calls[0]["url"] == "dap4://example.org/g1.dap?dap4.ce=/lat"
+        assert calls[0]["timeout"] == 120
+
+    def test_native_client_timeout_is_configurable(self):
+        with pytest.MonkeyPatch.context() as mp:
+            calls = fake_pydap(mp)
+            job = PyDAPPlugin(fake_context()).request(
+                PyDAPFixtures().result_set, client="pydap", timeout=5
+            )
+            job.results()
+        assert calls[0]["timeout"] == 5
 
     def test_no_urls_raises(self):
         plugin = PyDAPPlugin(fake_context())

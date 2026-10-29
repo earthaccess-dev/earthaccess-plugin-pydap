@@ -56,6 +56,7 @@ class PyDAPPlugin(PluginBase):
         protocol: Literal["dap4", "dap2"] = "dap4"
         variables: list[str] = field(default_factory=list)  # DAP4 constraint
         url_filter: str | None = None  # substring match on OPeNDAP hrefs
+        timeout: float = 120  # seconds per dataset when client="pydap"
 
     def _request(self, results: Any, options: Options) -> Any:
         urls = [
@@ -73,7 +74,9 @@ class PyDAPPlugin(PluginBase):
 
         if options.client == "pydap":
             return self.job(
-                lambda: _native_datasets(constrained, session, options.protocol),
+                lambda: _native_datasets(
+                    constrained, session, options.protocol, options.timeout
+                ),
                 output="opendap",
             )
         return self.job(
@@ -133,11 +136,16 @@ def _sample_granule(short_name: str) -> Any:
     return peek(found)
 
 
-def _native_datasets(urls: list[str], session: Any, protocol: str) -> list[Any]:
+def _native_datasets(
+    urls: list[str], session: Any, protocol: str, timeout: float
+) -> list[Any]:
     import pydap.client
 
     return [
-        pydap.client.open_url(url, protocol=protocol, session=session) for url in urls
+        pydap.client.open_url(
+            url, protocol=protocol, session=session, timeout=timeout
+        )
+        for url in urls
     ]
 
 

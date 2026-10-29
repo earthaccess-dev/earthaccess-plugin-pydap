@@ -75,6 +75,7 @@ A single granule: `xr.open_dataset(urls[0], engine="pydap", session=session)`.
 | `protocol` | `"dap4"` | OPeNDAP scheme: `dap4` or `dap2` |
 | `variables` | `[]` | variables for the constraint expression (`?dap4.ce=/lon;/lat;...`) |
 | `url_filter` | `None` | keep only hrefs containing this substring |
+| `timeout` | `120` | seconds allowed per dataset when `client="pydap"` opens it |
 
 The generated URL looks like:
 
