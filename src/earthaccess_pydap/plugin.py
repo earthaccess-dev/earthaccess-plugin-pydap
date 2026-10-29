@@ -30,6 +30,17 @@ _OPENDAP_OPERATIONS = frozenset(
     }
 )
 
+# Concrete usage for this plugin (the spec example is backend-agnostic).
+_EXAMPLES = {
+    Capability.LAZY_READ: (
+        'pyds = ea.plugins.pydap.request(results, client="pydap").results()[0]'
+    ),
+    Capability.SUBSET_VARIABLE: (
+        'ea.plugins.pydap.request(results, variables=["sst"], '
+        'client="xarray").results()  # DAP4 URLs'
+    ),
+}
+
 
 class PyDAPPlugin(PluginBase):
     name = "pydap"
@@ -76,7 +87,9 @@ class PyDAPPlugin(PluginBase):
         # because the data opened is the granule URL.
         if peek(results) is not None:
             if opendap_urls(results):
-                return Capabilities(True, operations=_OPENDAP_OPERATIONS)
+                return Capabilities(
+                    True, operations=_OPENDAP_OPERATIONS, examples=_EXAMPLES
+                )
             return Capabilities(
                 False, reason="none of these granules has an OPeNDAP link"
             )
@@ -93,7 +106,9 @@ class PyDAPPlugin(PluginBase):
                 reason=f"could not sample a granule for {short_name} in CMR",
             )
         if opendap_urls([sample]):
-            return Capabilities(True, operations=_OPENDAP_OPERATIONS)
+            return Capabilities(
+                True, operations=_OPENDAP_OPERATIONS, examples=_EXAMPLES
+            )
         # One sampled granule is weak evidence: never hard-block on it.
         return Capabilities(
             None,

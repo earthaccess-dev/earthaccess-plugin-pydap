@@ -212,3 +212,15 @@ class TestSupport:
         ):
             plugin.request(unsupported)
         native_mock.assert_not_called()
+
+
+class TestCapabilityDocs:
+    def test_explain_shows_the_native_client_example(self):
+        caps = PyDAPPlugin(fake_context()).capabilities(PyDAPFixtures().result_set)
+        text = caps.explain()
+        assert 'client="pydap"' in text
+        assert "native backend objects" in text
+
+    def test_capabilities_without_a_target_raises(self):
+        with pytest.raises(TypeError, match="needs search results"):
+            PyDAPPlugin(fake_context()).capabilities()
