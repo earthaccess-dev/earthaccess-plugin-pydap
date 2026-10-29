@@ -104,13 +104,15 @@ earthaccess EDL session (`auth = "edl"`); get one for xarray with
 ## Checking that a collection is supported
 
 The plugin checks the granules' UMM for an OPeNDAP link and fails early if none
-is present. It reports OPeNDAP's operations (lazy reads, dimension/variable
+is present. It reports OPeNDAP's operations (lazy reads and variable
 subsetting):
 
 ```python
 ea.plugins.pydap.capabilities(results)
-# Capabilities('pydap supported C1996881146-POCLOUD', operations=3)
-#   operations: lazy_read, subset_dimension, subset_variable
+# pydap supported C1996881146-POCLOUD
+#   lazy_read        read slices without downloading the whole granule
+#   subset_variable  select a subset of variables; an unknown name raises
+#   hint: use .explain() for options and examples
 ```
 
 ## License
