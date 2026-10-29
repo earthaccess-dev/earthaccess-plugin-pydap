@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from earthaccess_plugin_spec import Asset, Capabilities, Capability, PluginBase
+from earthaccess_plugin_spec.granules import peek, related_urls
 
 from .errors import NoOPeNDAPUrlsError
 
@@ -74,7 +75,7 @@ class PyDAPPlugin(PluginBase):
     def _supports(self, results: Any) -> Capabilities:
         # Granule links are better evidence than a collection association,
         # because the data opened is the granule URL.
-        if not _has_granules(results):
+        if peek(results) is None:
             return Capabilities(
                 None, reason="supply search results to check OPeNDAP links"
             )
@@ -82,13 +83,6 @@ class PyDAPPlugin(PluginBase):
         if urls:
             return Capabilities(True, operations=_OPENDAP_OPERATIONS)
         return Capabilities(False, reason="none of these granules has an OPeNDAP link")
-
-
-def _has_granules(results: Any) -> bool:
-    try:
-        return next(iter(results), None) is not None
-    except TypeError:
-        return False
 
 
 def _native_datasets(urls: list[str], session: Any, protocol: str) -> list[Any]:
@@ -107,7 +101,7 @@ def opendap_urls(results: Any, needle: str | None = None) -> list[str]:
 
     urls: list[str] = []
     for granule in results:
-        for related in granule.get("umm", {}).get("RelatedUrls", []):
+        for related in related_urls(granule):
             kind = f"{related.get('Type', '')} {related.get('Subtype', '')}".upper()
             url = related.get("URL", "")
             if (

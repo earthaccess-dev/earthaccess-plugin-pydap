@@ -150,7 +150,7 @@ def test_entry_point_registered():
 class TestSupport:
     def test_supported_with_operations(self):
         plugin = PyDAPPlugin(fake_context())
-        capabilities = plugin.supports(PyDAPFixtures().result_set)
+        capabilities = plugin.capabilities(PyDAPFixtures().result_set)
         assert capabilities.ok is True
         assert capabilities.operations == {
             Capability.LAZY_READ,
@@ -164,7 +164,7 @@ class TestSupport:
 
     def test_unsupported_without_links(self):
         plugin = PyDAPPlugin(fake_context())
-        support = plugin.supports(
+        support = plugin.capabilities(
             GranuleResultSet([make_granule(collection_id="C-X", urls=[])])
         )
         assert support.ok is False

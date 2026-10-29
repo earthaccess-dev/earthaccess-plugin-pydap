@@ -108,7 +108,7 @@ is present. It reports OPeNDAP's operations (lazy reads, dimension/variable
 subsetting):
 
 ```python
-ea.plugins.pydap.supports(results)
+ea.plugins.pydap.capabilities(results)
 # Capabilities('pydap supported C1996881146-POCLOUD', operations=3)
 #   operations: lazy_read, subset_dimension, subset_variable
 ```
