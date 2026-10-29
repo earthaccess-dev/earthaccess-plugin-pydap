@@ -74,14 +74,48 @@ class PyDAPPlugin(PluginBase):
     def _supports(self, results: Any) -> Capabilities:
         # Granule links are better evidence than a collection association,
         # because the data opened is the granule URL.
-        if peek(results) is None:
+        if peek(results) is not None:
+            if opendap_urls(results):
+                return Capabilities(True, operations=_OPENDAP_OPERATIONS)
             return Capabilities(
-                None, reason="supply search results to check OPeNDAP links"
+                False, reason="none of these granules has an OPeNDAP link"
             )
-        urls = opendap_urls(results)
-        if urls:
+
+        short_name = getattr(results, "short_name", "") or ""
+        if not short_name:
+            return Capabilities(
+                None, reason="supply search results or a collection short name"
+            )
+        sample = _sample_granule(short_name)
+        if sample is None:
+            return Capabilities(
+                None,
+                reason=f"could not sample a granule for {short_name} in CMR",
+            )
+        if opendap_urls([sample]):
             return Capabilities(True, operations=_OPENDAP_OPERATIONS)
-        return Capabilities(False, reason="none of these granules has an OPeNDAP link")
+        # One sampled granule is weak evidence: never hard-block on it.
+        return Capabilities(
+            None,
+            reason=f"the sampled {short_name} granule has no OPeNDAP link",
+        )
+
+
+def _sample_granule(short_name: str) -> Any:
+    """Fetch one granule's UMM from CMR to check its links.
+
+    Only used when ``capabilities()`` is given a short name instead of search
+    results. Returns ``None`` when CMR cannot be queried, which the caller maps
+    to "unknown" rather than blocking a request.
+    """
+
+    try:
+        import earthaccess
+
+        found = earthaccess.search_data(short_name=short_name, count=1)
+    except Exception:  # noqa: BLE001 - a capability check must never raise
+        return None
+    return peek(found)
 
 
 def _native_datasets(urls: list[str], session: Any, protocol: str) -> list[Any]:

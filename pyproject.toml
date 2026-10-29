@@ -53,7 +53,16 @@ disallow_untyped_defs = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["pydap", "pydap.*", "xarray", "xarray.*", "pytest", "pytest.*"]
+module = [
+  "pydap",
+  "pydap.*",
+  "xarray",
+  "xarray.*",
+  "earthaccess",
+  "earthaccess.*",
+  "pytest",
+  "pytest.*",
+]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

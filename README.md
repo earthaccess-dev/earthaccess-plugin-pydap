@@ -115,6 +115,10 @@ ea.plugins.pydap.capabilities(results)
 #   hint: use .explain() for options and examples
 ```
 
+With search results the check is local: it reads the granules' UMM links. Given
+only a short name, the plugin samples one granule from CMR. If CMR cannot be
+queried the answer is `unknown` (`ok=None`) rather than blocking the request.
+
 ## License
 
 MIT.

@@ -157,9 +157,39 @@ class TestSupport:
             Capability.SUBSET_VARIABLE,
         }
 
-    def test_capabilities_alias_by_short_name_is_unknown(self):
+    def test_short_name_samples_cmr_for_opendap_links(self, monkeypatch):
+        import earthaccess_pydap.plugin as plugin_mod
+
+        monkeypatch.setattr(plugin_mod, "_sample_granule", lambda name: make_granule())
         plugin = PyDAPPlugin(fake_context())
-        assert plugin.capabilities("MUR-JPL-L4-GLOB-v4.1").ok is None
+        capabilities = plugin.capabilities("MUR-JPL-L4-GLOB-v4.1")
+        assert capabilities.ok is True
+        assert capabilities.operations == {
+            Capability.LAZY_READ,
+            Capability.SUBSET_VARIABLE,
+        }
+
+    def test_short_name_without_links_is_unknown(self, monkeypatch):
+        import earthaccess_pydap.plugin as plugin_mod
+
+        monkeypatch.setattr(
+            plugin_mod, "_sample_granule", lambda name: make_granule(urls=[])
+        )
+        capabilities = PyDAPPlugin(fake_context()).capabilities(
+            "MUR-JPL-L4-GLOB-v4.1"
+        )
+        assert capabilities.ok is None
+        assert "no OPeNDAP link" in capabilities.reason
+
+    def test_short_name_when_cmr_is_unavailable_is_unknown(self, monkeypatch):
+        import earthaccess_pydap.plugin as plugin_mod
+
+        monkeypatch.setattr(plugin_mod, "_sample_granule", lambda name: None)
+        capabilities = PyDAPPlugin(fake_context()).capabilities(
+            "MUR-JPL-L4-GLOB-v4.1"
+        )
+        assert capabilities.ok is None
+        assert "CMR" in capabilities.reason
 
     def test_unsupported_without_links(self):
         plugin = PyDAPPlugin(fake_context())
