@@ -8,10 +8,12 @@ version = "0.1.0"
 description = "Lazy OPeNDAP access to Earthdata granules through PyDAP and xarray."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 authors = [{ name = "earthaccess contributors" }]
 dependencies = [
-  "earthaccess-plugin-spec @ git+https://github.com/betolink/earthaccess-plugin-spec.git@main",
+  "earthaccess-plugin-spec @ git+https://github.com/earthaccess-dev/earthaccess-plugin-spec.git@v0.3.0",
+  # TODO: switch to earthaccess>=1.0 once the upstream `plugins` branch is published.
+  "earthaccess @ git+https://github.com/earthaccess-dev/earthaccess.git@plugins",
   "pydap >=3.4",
   "xarray >=2024.1",
   "netCDF4",  # pydap streaming output (used by ea.download)
@@ -24,7 +26,7 @@ pydap = "earthaccess_pydap:PyDAPPlugin"
 test = ["pytest >=8.0", "mypy >=1.11", "ruff >=0.6"]
 
 [project.urls]
-Repository = "https://github.com/betolink/earthaccess-plugin-pydap"
+Repository = "https://github.com/earthaccess-dev/earthaccess-plugin-pydap"
 
 # The contract lives on GitHub until it is published to PyPI. A direct URL in
 # [project.dependencies] is honored by both pip and uv (pip ignores
@@ -47,7 +49,7 @@ src = ["src", "tests"]
 select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 files = ["src", "tests"]
 disallow_untyped_defs = true
 pretty = true
