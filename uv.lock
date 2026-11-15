@@ -501,7 +501,7 @@ wheels = [
 [[package]]
 name = "earthaccess"
 version = "1.0.0a2"
-source = { git = "https://github.com/earthaccess-dev/earthaccess.git?rev=plugins#d25a0e6470f019dc7424e1ce8f78b2eb60d4972e" }
+source = { git = "https://github.com/earthaccess-dev/earthaccess.git?rev=plugins#1afe566cf57a0fc1e60492c25a32bcfd9a7d6645" }
 dependencies = [
     { name = "earthaccess-plugin-spec" },
     { name = "fsspec" },
